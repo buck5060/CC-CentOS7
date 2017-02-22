@@ -27,11 +27,12 @@ yum install -y freeglut-devel.x86_64 freeglut.x86_64 libXi-devel.x86_64 \
 yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) wget
 
 # Get the NVIDIA CUDA Toolkit for Centos
-wget http://developer.download.nvidia.com/compute/cuda/7.5/Prod/local_installers/cuda_7.5.18_linux.run
+wget http://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+mv cuda_8.0.61_375.26_linux-run cuda_8.0.61_375.26_linux.run
 
 # Install the NVIDIA CUDA Toolkit for Centos
 export TMPDIR=$NVIDIA_TMP_FOLDER
-sudo sh cuda_7.5.18_linux.run --samples --toolkit --driver --silent --verbose --tmpdir $NVIDIA_TMP_FOLDER
+sudo sh cuda_8.0.61_375.26_linux.run --samples --toolkit --driver --silent --verbose --tmpdir $NVIDIA_TMP_FOLDER
 
 #############################################################
 # Post-Installation
@@ -40,14 +41,14 @@ sudo sh cuda_7.5.18_linux.run --samples --toolkit --driver --silent --verbose --
 # Mandatory Actions
 cat > '/etc/profile.d/cuda.sh' <<- EOM
 #!/bin/sh
-export PATH=/usr/local/cuda-7.5/bin:$PATH
+export PATH=/usr/local/cuda-8.0/bin:$PATH
 EOM
 chmod +x /etc/profile.d/cuda.sh
-echo '/usr/local/cuda-7.5/lib64' > /etc/ld.so.conf.d/nvidia-x86_64.conf
+echo '/usr/local/cuda-8.0/lib64' > /etc/ld.so.conf.d/nvidia-x86_64.conf
 ldconfig
 
 # Compile deviceQuery sample (useful for testing)
-DEVICE_QUERY_PATH="/usr/local/cuda-7.5/samples/1_Utilities/deviceQuery"
+DEVICE_QUERY_PATH="/usr/local/cuda-8.0/samples/1_Utilities/deviceQuery"
 source /etc/environment
 pushd $DEVICE_QUERY_PATH
 make
@@ -81,6 +82,6 @@ chmod +x /etc/rc.local
 rm -rf /root/tmp
 
 # Remove the CUDA Installer
-rm -f cuda_7.5.18_linux.run
+rm -f  cuda_8.0.61_375.26_linux.run
 
 exit 0

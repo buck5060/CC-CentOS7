@@ -6,6 +6,9 @@ fi
 set -eu
 set -o pipefail
 
+# Satisfy requirement for lsb_release
+yum install -y redhat-lsb-core
+
 # Clone the "cc-snapshot" script
 git clone https://github.com/ChameleonCloud/cc-snapshot.git
 
