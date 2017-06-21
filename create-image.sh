@@ -4,8 +4,19 @@
 # * via Yum: git python-pip PyYAML qemu-img xfsprogs xz
 # * via Pip: diskimage-builder
 
-IMAGE_NAME="CC-CentOS7"
-BASE_IMAGE="CentOS-7-x86_64-GenericCloud-1608.qcow2"
+case "$1" in
+"base")
+  IMAGE_NAME="CC-CentOS7"
+  EXTRA_ELEMENTS=""
+  ;;
+"gpu")
+  IMAGE_NAME="CC-CentOS7-CUDA8"
+  EXTRA_ELEMENTS="cc-cuda"
+  ;;
+*)
+  echo "Must provide image type, one of: base, gpu"
+  exit 1
+esac
 
 # Clone the required repositories for Heat contextualization elements
 if [ ! -d tripleo-image-elements ]; then
@@ -15,25 +26,25 @@ if [ ! -d heat-templates ]; then
   git clone https://git.openstack.org/openstack/heat-templates.git
 fi
 
-if [ "$BASE_IMAGE" == "" ]; then
-  echo "could not identify the last centos qcow2 image from http://cloud.centos.org/centos/7/images/sha256sum.txt"
-  exit 1
-fi
+# if [ "$IMAGE_URL" == "" ]; then; echo "IMAGE_URL not provided"; exit 1; fi
+if [ "$IMAGE_REVISION" == "" ]; then; echo "IMAGE_REVISION not provided"; exit 1; fi
+if [ "$IMAGE_SHA256" == "" ]; then; echo "IMAGE_SHA256 not provided"; exit 1; fi
+
 
 # echo "will work with $BASE_IMAGE"
-BASE_IMAGE_XZ="$BASE_IMAGE.xz"
+# BASE_IMAGE_XZ="$BASE_IMAGE.xz"
 
 if [ ! -f "$BASE_IMAGE_XZ" ]; then
   curl -L -O "http://cloud.centos.org/centos/7/images/$BASE_IMAGE_XZ"
 fi
 
 # Find programatively the sha256 of the selected image
-IMAGE_SHA566=$(curl  http://cloud.centos.org/centos/7/images/sha256sum.txt 2>&1 \
-               | grep "$BASE_IMAGE_XZ\$" \
-               | awk '{print $1}')
+# IMAGE_SHA566=$(curl  http://cloud.centos.org/centos/7/images/sha256sum.txt 2>&1 \
+#                | grep "$BASE_IMAGE_XZ\$" \
+#                | awk '{print $1}')
 
 # echo "will work with $BASE_IMAGE_XZ => $IMAGE_SHA566"
-if ! sh -c "echo $IMAGE_SHA566 $BASE_IMAGE_XZ | sha256sum -c"; then
+if ! sh -c "echo $IMAGE_SHA256 $BASE_IMAGE_XZ | sha256sum -c"; then
   echo "Wrong checksum for $BASE_IMAGE_XZ. Has the image changed?"
   exit 1
 fi
@@ -76,7 +87,7 @@ if [ -f "$OUTPUT_FILE" ]; then
   rm -f "$OUTPUT_FILE"
 fi
 
-disk-image-create chameleon-common $ELEMENTS $AGENT_ELEMENTS $DEPLOYMENT_BASE_ELEMENTS -o $OUTPUT_FILE
+disk-image-create chameleon-common $ELEMENTS $AGENT_ELEMENTS $DEPLOYMENT_BASE_ELEMENTS -o $OUTPUT_FILE --no-tmpfs
 
 if [ -f "$OUTPUT_FILE.qcow2" ]; then
   mv $OUTPUT_FILE.qcow2 $OUTPUT_FILE
