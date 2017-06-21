@@ -8,6 +8,8 @@ try:
 except ImportError:
     import ConfigParser as configparser
 import io
+import operator
+import os
 import sys
 
 import requests
@@ -33,7 +35,7 @@ def newest_image():
     return max(image_index().values(), key=operator.itemgetter('revision'))
 
 
-def main()
+def main():
     parser = argparse.ArgumentParser(description=__doc__)
 
     parser.add_argument('-r', '--revision', type=str, default=LATEST,
@@ -55,9 +57,10 @@ def main()
     # os.environ['IMAGE_URL'] = image['url']
     os.environ['BASE_IMAGE_XZ'] = image['file']
     os.environ['IMAGE_REVISION'] = image['revision']
-    os.environ['IMAGE_SHA256'] = image['checksum']
+    os.environ['IMAGE_SHA512'] = image['checksum']
+    os.environ['BASE_IMAGE'] = image['file'][:-3]
 
-    os.execl('create-image.sh', args.variant)
+    os.execl('create-image.sh', 'create-image.sh', args.variant)
 
 if __name__ == '__main__':
     sys.exit(main())

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+set -ex
 # This script assumes the following dependencies are installed:
 # * via Yum: git python-pip PyYAML qemu-img xfsprogs xz
 # * via Pip: diskimage-builder
@@ -26,10 +26,9 @@ if [ ! -d heat-templates ]; then
   git clone https://git.openstack.org/openstack/heat-templates.git
 fi
 
-# if [ "$IMAGE_URL" == "" ]; then; echo "IMAGE_URL not provided"; exit 1; fi
-if [ "$IMAGE_REVISION" == "" ]; then; echo "IMAGE_REVISION not provided"; exit 1; fi
-if [ "$IMAGE_SHA256" == "" ]; then; echo "IMAGE_SHA256 not provided"; exit 1; fi
-
+# if [ "$IMAGE_URL" == "" ]; then echo "IMAGE_URL not provided"; exit 1; fi
+if [ "$IMAGE_REVISION" == "" ]; then echo "IMAGE_REVISION not provided"; exit 1; fi
+if [ "$IMAGE_SHA512" == "" ]; then echo "IMAGE_SHA512 not provided"; exit 1; fi
 
 # echo "will work with $BASE_IMAGE"
 # BASE_IMAGE_XZ="$BASE_IMAGE.xz"
@@ -44,7 +43,7 @@ fi
 #                | awk '{print $1}')
 
 # echo "will work with $BASE_IMAGE_XZ => $IMAGE_SHA566"
-if ! sh -c "echo $IMAGE_SHA256 $BASE_IMAGE_XZ | sha256sum -c"; then
+if ! sh -c "echo $IMAGE_SHA512 $BASE_IMAGE_XZ | sha512sum -c"; then
   echo "Wrong checksum for $BASE_IMAGE_XZ. Has the image changed?"
   exit 1
 fi
@@ -60,7 +59,7 @@ export ELEMENTS_PATH='elements:tripleo-image-elements/elements:heat-templates/ho
 export FS_TYPE='xfs'
 export LIBGUESTFS_BACKEND='direct'
 
-OUTPUT_FILE="$1"
+OUTPUT_FILE="$2"
 if [ "$OUTPUT_FILE" == "" ]; then
   TMPDIR=`mktemp -d`
   mkdir -p $TMPDIR/common
@@ -87,7 +86,7 @@ if [ -f "$OUTPUT_FILE" ]; then
   rm -f "$OUTPUT_FILE"
 fi
 
-disk-image-create chameleon-common $ELEMENTS $AGENT_ELEMENTS $DEPLOYMENT_BASE_ELEMENTS -o $OUTPUT_FILE --no-tmpfs
+disk-image-create chameleon-common $ELEMENTS $EXTRA_ELEMENTS $AGENT_ELEMENTS $DEPLOYMENT_BASE_ELEMENTS -o $OUTPUT_FILE --no-tmpfs
 
 if [ -f "$OUTPUT_FILE.qcow2" ]; then
   mv $OUTPUT_FILE.qcow2 $OUTPUT_FILE
