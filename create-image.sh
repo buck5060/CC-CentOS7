@@ -1,5 +1,9 @@
 #!/bin/bash
 set -ex
+
+# XXX: executing this directly is kinda tricky; it's currently called via exec
+# (process replacement) by create-image.py which sets a few env vars.
+
 # This script assumes the following dependencies are installed:
 # * via Yum: git python-pip PyYAML qemu-img xfsprogs xz
 # * via Pip: diskimage-builder
@@ -12,6 +16,10 @@ case "$1" in
 "gpu")
   IMAGE_NAME="CC-CentOS7-CUDA8"
   EXTRA_ELEMENTS="cc-cuda"
+  ;;
+"fpga")
+  IMAGE_NAME="CC-CentOS7-FPGA"
+  EXTRA_ELEMENTS="cc-fpga"
   ;;
 *)
   echo "Must provide image type, one of: base, gpu"
