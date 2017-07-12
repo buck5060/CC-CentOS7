@@ -3,44 +3,38 @@
 This directory contains the scripts used to generate the Chameleon KVM and
 bare-metal CentOS 7 images. It relies on diskimage-builder.
 
-## Installation
+There are a couple variants of images it can produce, assembled using the
+needed elements:
 
-Images are created with the *diskimage-builder*:
-http://docs.openstack.org/developer/diskimage-builder
+* `base`
+* `gpu` - Includes CUDA8 framework
+* `fpga` - Includes Altera Nallatech tools
 
-Requirements:
-- *qemu-utils* (ubuntu/debian) or *qemu* (Fedora/RHEL/opensuse).
+Images are created with [diskimage-builder](http://docs.openstack.org/developer/diskimage-builder)
 
-To install dependencies on Centos, please run the following commands:
+## Quickstart
 
 ```
-sudo yum install epel-release
-yum install qemu-img # or apt-get install qemu-disk
-pip install diskimage-builder
+sudo install-reqs.sh         # install tools and dependencies
+python create-image.py base  # create the "base" iamge with most recent cloud image
 ```
+
+## Requirements
+
+Installed by `install-reqs.sh`
+
+* qemu-utils:
+  * CentOS: `yum install qemu-img`, may also require epel-release
+  * Ubuntu: `apt-get install qemu-disk`
+* diskimage-builder: `pip install diskimage-builder`
 
 ## Usage
 
-The main script takes an output path as a unique (optional) input parameter:
-```
-./create-image.sh <output_file>
-```
+The main script takes the variant and revision number.
 
-and can be used as in the following example:
-```
-[cc@image-builder-jpastor CC-CentOS7]$ ./create-image.sh image.qcow2
-CentOS-7-x86_64-GenericCloud-1608.qcow2.xz: OK
-xz: CentOS-7-x86_64-GenericCloud-1608.qcow2: File exists
+`python create-image.py --help`.
 
-[...]
-
-Converting image using qemu-img convert
-Image file image.qcow2 created...
-mv image.qcow2-compressed image.qcow2
-Image built in image.qcow2
-to add the image in glance run the following command:
-glance image-create --name "CC-CentOS7" --disk-format qcow2 --container-format bare --file image.qcow2
-```
+The output is dumped to a temporary folder.
 
 At the end of its execution, the script provides the Glance command that can be
 used to upload the image to an existing OpenStack infrastructure.
