@@ -6,14 +6,16 @@ fi
 set -eu
 set -o pipefail
 
-# 0.7.9 cloud-init for testing (and supporting explicit uid:gid's)
+# manually install 0.7.9 cloud-init until formally released into the extras repo
+# https://lists.centos.org/pipermail/centos/2017-July/165431.html
 yum install -y https://buildlogs.centos.org/c7-extras/cloud-init/20170705233059/0.7.9-3.el7.centos.x86_64/cloud-init-0.7.9-3.el7.centos.x86_64.rpm
 
+# NOTE: UIDs MUST be strings/quoted
 cat > /etc/cloud/cloud.cfg <<'EOF'
 users:
  - default
  - name: ccadmin
-   uid: '2000'
+   uid: '1010'
    lock-passwd: true
    gecos: Chameleon Cloud Admin User
    groups: [wheel, adm, systemd-journal]
@@ -82,7 +84,7 @@ cloud_final_modules:
 system_info:
   default_user:
     name: cc
-    uid: '3000'
+    uid: '1000'
     lock_passwd: true
     gecos: Chameleon Cloud User
     groups: [wheel, adm, systemd-journal]
