@@ -13,7 +13,7 @@ cat > /etc/cloud/cloud.cfg <<'EOF'
 users:
  - default
  - name: ccadmin
-   uid: 2000
+   uid: '2000'
    lock-passwd: true
    gecos: Chameleon Cloud Admin User
    groups: [wheel, adm, systemd-journal]
@@ -82,6 +82,7 @@ cloud_final_modules:
 system_info:
   default_user:
     name: cc
+    uid: '3000'
     lock_passwd: true
     gecos: Chameleon Cloud User
     groups: [wheel, adm, systemd-journal]
