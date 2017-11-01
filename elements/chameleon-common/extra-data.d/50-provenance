@@ -7,4 +7,5 @@ set -eu
 set -o pipefail
 
 mkdir -p $TMP_BUILD_DIR/opt/chameleon
-echo $DIB_CC_PROVENANCE | python -mjson.tool > $TMP_BUILD_DIR/opt/chameleon/provenance.json
+echo $DIB_CC_PROVENANCE # debugging
+echo $DIB_CC_PROVENANCE | base64 -d | python -mjson.tool > $TMP_BUILD_DIR/opt/chameleon/provenance.json
