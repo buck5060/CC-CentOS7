@@ -11,7 +11,7 @@ fi
 
 function centos_reqs() {
   yum install -y epel-release
-  yum install -y qemu-img python-pip
+  yum install -y qemu-img python-pip #python-virtualenv
 }
 
 function ubuntu_reqs() {
@@ -33,4 +33,5 @@ fi
 ### Generic installs
 
 # pip install --upgrade pip
+# this is a bit dirty, you should probably use a virtualenv
 pip install diskimage-builder
