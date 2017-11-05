@@ -31,6 +31,14 @@ ssh_genkeytypes:  ~
 syslog_fix_perms: ~
 preserve_hostname: false
 
+datasource:
+  OpenStack:
+    metadata_urls:
+      - "http://169.254.169.254"
+    #timeout: 5 # (default 5)
+    #retries: 5 # (default 5)
+    #max_wait: 10 # (default -1)
+
 cloud_init_modules:
  - migrator
  - seed_random
