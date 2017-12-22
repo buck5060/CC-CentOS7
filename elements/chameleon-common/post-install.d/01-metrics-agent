@@ -6,7 +6,7 @@ fi
 set -eu
 set -o pipefail
 
-mkdir /opt/chameleon
+mkdir -p /opt/chameleon
 
 # Clone the "cc-snapshot" script
 cd /opt/chameleon
