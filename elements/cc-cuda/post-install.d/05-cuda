@@ -24,10 +24,10 @@ yum install -y freeglut-devel.x86_64 freeglut.x86_64 libXi-devel.x86_64 \
 #############################################################
 
 # Install kernel headers and wget
-yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) wget
+yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) wget dkms
 
 # Get the NVIDIA CUDA Toolkit for Centos
-wget http://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+wget -nv http://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
 mv cuda_8.0.61_375.26_linux-run cuda_8.0.61_375.26_linux.run
 
 # Install the NVIDIA CUDA Toolkit for Centos
