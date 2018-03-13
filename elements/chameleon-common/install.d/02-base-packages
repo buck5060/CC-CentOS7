@@ -40,6 +40,7 @@ yum install -y \
     libstdc++-devel \
     libtool \
     neon \
+    nscd \
     pakchois \
     patchutils \
     perl-Data-Dumper \
@@ -82,3 +83,6 @@ yum install -y python2-oslo-log
 
 # Install missing firmware
 yum install -y linux-firmware
+
+# NSCD not enabled by default on installation
+systemctl enable nscd
