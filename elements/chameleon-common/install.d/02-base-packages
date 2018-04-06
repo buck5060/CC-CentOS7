@@ -18,6 +18,7 @@ yum install -y \
     collectd \
     cscope \
     ctags \
+    curl-devel \
     diffstat \
     doxygen \
     dwz \
@@ -25,6 +26,8 @@ yum install -y \
     elfutils \
     emacs-filesystem \
     flex \
+    fuse-devel \
+    gcc \
     gcc-c++ \
     gcc-gfortran \
     gdb \
@@ -32,15 +35,20 @@ yum install -y \
     gettext-devel \
     indent \
     intltool \
+    json-c-devel \
     libdwarf \
     libgfortran \
     libguestfs-tools \
     libquadmath \
     libquadmath-devel \
+    libjson-c-dev \
     libstdc++-devel \
     libtool \
+    libxml2-devel \
+    make \
     neon \
     nscd \
+    openssl-devel \
     pakchois \
     patchutils \
     perl-Data-Dumper \
