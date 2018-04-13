@@ -8,7 +8,7 @@ set -o pipefail
 
 mkdir -p /opt/chameleon
 
-# Clone the "cc-snapshot" script
+# Clone script
 cd /opt/chameleon
 git clone https://github.com/ChameleonCloud/collectd-ceilometer-plugin.git
 cd collectd-ceilometer-plugin
