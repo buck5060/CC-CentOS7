@@ -15,6 +15,15 @@ set -o pipefail
 NVIDIA_TMP_FOLDER=/root/tmp
 mkdir -p $NVIDIA_TMP_FOLDER
 
+# Disabling NOUVEAU doesn't work, but seems harmless
+# Disable NOUVEAU http://docs.nvidia.com/cuda/cuda-installation-guide-linux/index.html#runfile-nouveau
+# cat > '/etc/modprobe.d/blacklist-nouveau.conf' <<- EOM
+# blacklist nouveau
+# options nouveau modeset=0
+# EOM
+# Regenerate kernel
+# sudo dracut --force
+
 # Install libraries that are required by CUDA to be fully installed
 yum install -y freeglut-devel.x86_64 freeglut.x86_64 libXi-devel.x86_64 \
     mesa-libGL-devel.x86_64 mesa-libGLES.x86_64 mesa-libGLU-devel.x86_64 \
@@ -24,61 +33,38 @@ yum install -y freeglut-devel.x86_64 freeglut.x86_64 libXi-devel.x86_64 \
 # Installation (runfile)
 #############################################################
 
-RUNFILEDIR=cuda-runfiles
-
-mkdir $RUNFILEDIR
-
 # Install kernel headers and wget
-yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r)
+yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) wget dkms
+
+# fence.h has beed renamed to dma-fence.h in the latest kernel, which fails the nvidia installation
+# https://lists.centos.org/pipermail/centos/2017-October/166686.html
+# Might cause issue
+sudo mv /usr/src/kernels/3.10.0-693.21.1.el7.x86_64/include/linux/dma-fence.h /usr/src/kernels/3.10.0-693.21.1.el7.x86_64/include/linux/fence.h
 
 # Get the NVIDIA CUDA Toolkit for Centos
-# https://developer.nvidia.com/cuda-downloads?target_os=Linux&target_arch=x86_64&target_distro=CentOS&target_version=7&target_type=runfilelocal
-curl \
-    --silent \
-    --show-error \
-    --location \
-    --output $RUNFILEDIR/runfile \
-    https://developer.nvidia.com/compute/cuda/9.1/Prod/local_installers/cuda_9.1.85_387.26_linux
-
-curl -sSLo $RUNFILEDIR/patch1 \
-    https://developer.nvidia.com/compute/cuda/9.1/Prod/patches/1/cuda_9.1.85.1_linux
-curl -sSLo $RUNFILEDIR/patch2 \
-    https://developer.nvidia.com/compute/cuda/9.1/Prod/patches/2/cuda_9.1.85.2_linux
-curl -sSLo $RUNFILEDIR/patch3 \
-    https://developer.nvidia.com/compute/cuda/9.1/Prod/patches/3/cuda_9.1.85.3_linux
+wget -nv http://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
+mv cuda_8.0.61_375.26_linux-run cuda_8.0.61_375.26_linux.run
 
 # Install the NVIDIA CUDA Toolkit for Centos
 export TMPDIR=$NVIDIA_TMP_FOLDER
-sh $RUNFILEDIR/runfile \
-    --samples \
-    --toolkit \
-    --driver \
-    --silent \
-    --verbose \
-    --tmpdir $NVIDIA_TMP_FOLDER
-
-sh $RUNFILEDIR/patch1 --silent --accept-eula
-sh $RUNFILEDIR/patch2 --silent --accept-eula
-sh $RUNFILEDIR/patch3 --silent --accept-eula
+sudo sh cuda_8.0.61_375.26_linux.run --samples --toolkit --driver --silent --verbose --tmpdir $NVIDIA_TMP_FOLDER
 
 #############################################################
 # Post-Installation
 #############################################################
 
-PROFILE_SCRIPT=/etc/profile.d/cuda.sh
-CUDA_ROOT=/usr/local/cuda-9.1
-
 # Mandatory Actions
-cat > $PROFILE_SCRIPT << EOM
+cat > '/etc/profile.d/cuda.sh' <<- EOM
 #!/bin/sh
-export PATH=$CUDA_ROOT/bin:\$PATH
+export PATH=/usr/local/cuda-8.0/bin:$PATH
+export LD_LIBRARY_PATH=/usr/local/cuda-8.0/lib64
 EOM
-chmod +x $PROFILE_SCRIPT
-echo "$CUDA_ROOT/lib64" > /etc/ld.so.conf.d/nvidia-x86_64.conf
+chmod +x /etc/profile.d/cuda.sh
+echo '/usr/local/cuda-8.0/lib64' > /etc/ld.so.conf.d/nvidia-x86_64.conf
 ldconfig
 
 # Compile deviceQuery sample (useful for testing)
-DEVICE_QUERY_PATH="$CUDA_ROOT/samples/1_Utilities/deviceQuery"
+DEVICE_QUERY_PATH="/usr/local/cuda-8.0/samples/1_Utilities/deviceQuery"
 source /etc/environment
 pushd $DEVICE_QUERY_PATH
 make
@@ -112,6 +98,6 @@ chmod +x /etc/rc.local
 rm -rf $NVIDIA_TMP_FOLDER
 
 # Remove the CUDA Installer
-rm -rf $RUNFILEDIR
+rm -f cuda_8.0.61_375.26_linux.run
 
 exit 0

@@ -40,8 +40,11 @@ def main():
 
     parser.add_argument('-r', '--revision', type=str, default=LATEST,
         help='Revision to build with, usually of the format YYMM')
-    parser.add_argument('variant', type=str,
+    parser.add_argument('-v', '--variant', type=str,
         help='Image variant to build.') # extra elements defined in the .sh
+    parser.add_argument('-c', '--cuda-version', type=str, default='cuda9',
+        help='CUDA version to install. Ignore if the variant is not gpu.')
+    
 
     args = parser.parse_args()
 
@@ -60,7 +63,10 @@ def main():
     os.environ['IMAGE_SHA512'] = image['checksum']
     os.environ['BASE_IMAGE'] = image['file'][:-3]
 
-    os.execl('create-image.sh', 'create-image.sh', args.variant)
+    if args.variant == 'gpu':
+        os.execl('create-image.sh', 'create-image.sh', '--variant', args.variant, '--cuda', args.cuda_version)
+    else:
+        os.execl('create-image.sh', 'create-image.sh', '--variant', args.variant)
 
 if __name__ == '__main__':
     sys.exit(main())

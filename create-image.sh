@@ -8,14 +8,48 @@ set -ex
 # * via Yum: git python-pip PyYAML qemu-img xfsprogs xz
 # * via Pip: diskimage-builder
 
-case "$1" in
+VARIANT="base"
+CUDA_VERSION=""
+TMPDIR=`mktemp -d`
+mkdir -p $TMPDIR/common
+OUTPUT_FILE="$TMPDIR/common/$IMAGE_NAME.qcow2"
+
+while [ "$1" != "" ]; do
+    case $1 in
+        -o | --output )         shift
+                                OUTPUT_FILE=$1
+                                ;;
+        -v | --variant )        shift
+                                VARIANT=$1
+                                ;;
+        -c | --cuda )           shift
+                                CUDA_VERSION=$1
+                                ;;
+        * )                     echo "Unrecognized option $1"
+                                exit 1
+    esac
+    shift
+done
+
+case "$VARIANT" in
 "base")
   IMAGE_NAME="CC-CentOS7"
   EXTRA_ELEMENTS=""
   ;;
 "gpu")
-  IMAGE_NAME="CC-CentOS7-CUDA8"
-  EXTRA_ELEMENTS="cc-cuda"
+  if [ "$CUDA_VERSION" == "cuda8" ]; then
+    IMAGE_NAME="CC-CentOS7-CUDA8"
+    EXTRA_ELEMENTS="cc-cuda8"
+  elif [ "$CUDA_VERSION" == "cuda9" ]; then
+  	IMAGE_NAME="CC-CentOS7-CUDA9"
+    EXTRA_ELEMENTS="cc-cuda9"
+  elif [ "$CUDA_VERSION" == "" ]; then
+  	echo "You must specify a cuda version"
+  	exit 1
+  else
+  	echo "$CUDA_VERSION is not supported"
+  	exit 1
+  fi
   ;;
 "fpga")
   IMAGE_NAME="CC-CentOS7-FPGA"
@@ -66,13 +100,6 @@ export DIB_LOCAL_IMAGE=`pwd`/$BASE_IMAGE
 export ELEMENTS_PATH='elements:tripleo-image-elements/elements:heat-templates/hot/software-config/elements'
 export FS_TYPE='xfs'
 export LIBGUESTFS_BACKEND='direct'
-
-OUTPUT_FILE="$2"
-if [ "$OUTPUT_FILE" == "" ]; then
-  TMPDIR=`mktemp -d`
-  mkdir -p $TMPDIR/common
-  OUTPUT_FILE="$TMPDIR/common/$IMAGE_NAME.qcow2"
-fi
 
 ELEMENTS="vm"
 if [ "$FORCE_PARTITION_IMAGE" = true ]; then
