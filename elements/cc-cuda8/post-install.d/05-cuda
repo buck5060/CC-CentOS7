@@ -39,7 +39,7 @@ yum install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) wget dkms
 # fence.h has beed renamed to dma-fence.h in the latest kernel, which fails the nvidia installation
 # https://lists.centos.org/pipermail/centos/2017-October/166686.html
 # Might cause issue
-sudo mv /usr/src/kernels/3.10.0-693.21.1.el7.x86_64/include/linux/dma-fence.h /usr/src/kernels/3.10.0-693.21.1.el7.x86_64/include/linux/fence.h
+sudo mv /usr/src/kernels/$(uname -r)/include/linux/dma-fence.h /usr/src/kernels/$(uname -r)/include/linux/fence.h
 
 # Get the NVIDIA CUDA Toolkit for Centos
 wget -nv http://developer.nvidia.com/compute/cuda/8.0/Prod2/local_installers/cuda_8.0.61_375.26_linux-run
