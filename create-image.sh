@@ -95,6 +95,9 @@ xz --decompress --keep $BASE_IMAGE_XZ
 # Forces diskimage-builder to install software using package rather than source
 # See https://docs.openstack.org/diskimage-builder/latest/user_guide/install_types.html
 export DIB_DEFAULT_INSTALLTYPE='package'
+export DIB_INSTALLTYPE_os_apply_config='source'
+export DIB_INSTALLTYPE_os_collect_config='source'
+export DIB_INSTALLTYPE_os_refresh_config='source'
 export DIB_LOCAL_IMAGE=`pwd`/$BASE_IMAGE
 # Required by diskimage-builder to discover element collections
 export ELEMENTS_PATH='elements:tripleo-image-elements/elements:heat-templates/hot/software-config/elements'
