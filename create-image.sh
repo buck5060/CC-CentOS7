@@ -93,7 +93,7 @@ fi
 xz --decompress --keep $BASE_IMAGE_XZ
 
 # Forces diskimage-builder to install software using package rather than source
-# See http://docs.openstack.org/developer/diskimage-builder/developer/install_types.html
+# See https://docs.openstack.org/diskimage-builder/latest/user_guide/install_types.html
 export DIB_DEFAULT_INSTALLTYPE='package'
 export DIB_LOCAL_IMAGE=`pwd`/$BASE_IMAGE
 # Required by diskimage-builder to discover element collections
