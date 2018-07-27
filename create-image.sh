@@ -64,8 +64,8 @@ esac
 if [ ! -d tripleo-image-elements ]; then
   git clone https://git.openstack.org/openstack/tripleo-image-elements.git
 fi
-if [ ! -d heat-templates ]; then
-  git clone https://git.openstack.org/openstack/heat-templates.git
+if [ ! -d heat-agents ]; then
+  git clone https://git.openstack.org/openstack/heat-agents.git
 fi
 
 # if [ "$IMAGE_URL" == "" ]; then echo "IMAGE_URL not provided"; exit 1; fi
@@ -100,7 +100,7 @@ export DIB_INSTALLTYPE_os_collect_config='source'
 export DIB_INSTALLTYPE_os_refresh_config='source'
 export DIB_LOCAL_IMAGE=`pwd`/$BASE_IMAGE
 # Required by diskimage-builder to discover element collections
-export ELEMENTS_PATH='elements:tripleo-image-elements/elements:heat-templates/hot/software-config/elements'
+export ELEMENTS_PATH='elements:tripleo-image-elements/elements:heat-agents/'
 export FS_TYPE='xfs'
 export LIBGUESTFS_BACKEND='direct'
 
