@@ -44,6 +44,7 @@ def main():
         help='Image variant to build.') # extra elements defined in the .sh
     parser.add_argument('-c', '--cuda-version', type=str, default='cuda9',
         help='CUDA version to install. Ignore if the variant is not gpu.')
+    parser.add_argument('-g', '--region', type=str, required=True, help='Region name (for FPGA)')
     
 
     args = parser.parse_args()
@@ -66,7 +67,7 @@ def main():
     if args.variant == 'gpu':
         os.execl('create-image.sh', 'create-image.sh', '--variant', args.variant, '--cuda', args.cuda_version)
     else:
-        os.execl('create-image.sh', 'create-image.sh', '--variant', args.variant)
+        os.execl('create-image.sh', 'create-image.sh', '--variant', args.variant, '--region', args.region)
 
 if __name__ == '__main__':
     sys.exit(main())

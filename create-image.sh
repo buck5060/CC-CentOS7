@@ -25,6 +25,9 @@ while [ "$1" != "" ]; do
         -c | --cuda )           shift
                                 CUDA_VERSION=$1
                                 ;;
+        -g | --region )         shift
+                                REGION=$1
+                                ;;
         * )                     echo "Unrecognized option $1"
                                 exit 1
     esac
@@ -53,7 +56,14 @@ case "$VARIANT" in
   ;;
 "fpga")
   IMAGE_NAME="CC-CentOS7-FPGA"
-  EXTRA_ELEMENTS="cc-fpga"
+  if [ "$REGION" == "CHI@TACC" ]; then
+  	EXTRA_ELEMENTS="cc-fpga-tacc"
+  elif [ "$REGION" == "CHI@UC" ]; then
+  	EXTRA_ELEMENTS="cc-fpga-uc"
+  else
+  	echo "Region is required for FPGA build"
+  	exit 1
+  fi
   ;;
 *)
   echo "Must provide image type, one of: base, gpu"
