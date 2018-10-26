@@ -9,6 +9,6 @@ set -o pipefail
 yum remove -y chrony
 yum install -y ntp
 
-echo "server ntp.tacc.utexas.edu iburst" >> /etc/ntp.conf
+echo "server time.northwestern.edu iburst" >> /etc/ntp.conf
 
 systemctl enable ntpd
